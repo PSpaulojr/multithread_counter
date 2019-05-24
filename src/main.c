@@ -8,7 +8,6 @@
 #define N_PROCESSOS  4
 
 unsigned int verifica_primo (unsigned int N);
-
 void* funcao_thread(void *arg);
 
 pthread_mutex_t trava;
@@ -35,6 +34,8 @@ int main () {
     qntd_numeros++;
   }
 
+  printf("Qntd_numeros:\t%d\n", qntd_numeros);
+
   pthread_t threads[4];
   
   if (qntd_numeros > 4){
@@ -55,11 +56,13 @@ int main () {
     pthread_join(threads[i], NULL);
   }
 
-  for(int k = 0 ; k  < qntd_numeros ; k += N_PROCESSOS) {
+   for(int k = 0 ; k  < qntd_numeros ; k += N_PROCESSOS) {
     pthread_mutex_lock(&trava);
     qntd_primos += verifica_primo( vetor_numeros[k] );
     pthread_mutex_unlock(&trava);
+    printf("Principal - Numero: %d\tIndice: [%d]\tQntd_Primo %d\n", vetor_numeros[k], k, qntd_primos);
   }
+  
 
   printf("%d\n", qntd_primos);
 
@@ -73,6 +76,7 @@ void* funcao_thread(void *arg) {
   for( int k = M ; k  < qntd_numeros ; k += N_PROCESSOS ){
     pthread_mutex_lock(&trava);
     qntd_primos += verifica_primo( vetor_numeros[k+1] );
+    printf("Thread %d - Numero: %d\tIndice: [%d]\tQntd_Primo %d\n", M, vetor_numeros[k+1], k+1, qntd_primos);
     pthread_mutex_unlock(&trava);
   }
   return 0;
